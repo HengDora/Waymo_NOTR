@@ -141,20 +141,7 @@ python ./datasets/generate_lidar_depth.py --datadir DATA_DIR
 - **相机外参 (Camera Extrinsics)**  
   - 每个文件以 `{cam_id}.txt` 命名，包含一个 4x4 的相机到自车坐标系的变换矩阵，即 Waymo Open Dataset 中的 `frame.context.camera_calibrations.extrinsic.transform`。
 
-- **LiDAR 数据 (Lidar Data)**  
-  - 每个文件以 `{timestep:03d}.bin` 命名，包含一个 Nx14 的数组，具体包括以下维度：
-    - **射线起点 (Origins)**（3维）：LiDAR 射线在自车坐标系中的起点坐标。
-    - **点云坐标 (Points)**（3维）：LiDAR 点的 (x, y, z) 坐标，在自车坐标系中。
-    - **流场 (Flows)**（4维）：流场向量 (dx, dy, dz, flow_class)，用于评估流场预测性能。`flow_class` 的定义参考 `datasets/waymo_preprocess.py` 第 676-682 行。
-    - **地面标签 (Ground Labels)**（1维）：LiDAR 点的地面标签，1 表示地面，0 表示非地面，用于训练神经场景流先验（在 EmerNeRF 中未使用）。
-    - **强度 (Intensities)**（1维）：LiDAR 点的强度值。
-    - **伸长率 (Elongations)**（1维）：LiDAR 点的伸长率。
-    - **激光器ID (Laser_ids)**（1维）：LiDAR 点的激光器ID，分别为：
-      - 0：TOP（顶部）
-      - 1：FRONT（前部）
-      - 2：SIDE_LEFT（侧左）
-      - 3：SIDE_RIGHT（侧右）
-      - 4：REAR（后部）
+- **LiDAR_depth 数据 (Lidar Data)**  
 
 - **动态掩码 (Dynamic Mask)**  
   - 二值掩码图像以 `{timestep:03d}_{cam_id}.png` 命名，用于指示场景中的动态区域。1 表示动态，0 表示静态。通过过滤地面真值 2D 对象边界框获得，排除速度小于 1m/s 的边界框，以包含有意义的移动对象，同时减少背景噪声。用于评估，不在训练中使用。
@@ -164,11 +151,11 @@ python ./datasets/generate_lidar_depth.py --datadir DATA_DIR
 ```
 data/waymo/processed
 ├── training
-│   ├── SCENE_ID                # 场景ID，例如 001、002 等
+│   ├── SCENE_ID               # 场景ID，例如 001、002 等
 │   │   ├── dynamic_masks      # 动态掩码：{timestep:03d}{cam_id}.png
 │   │   ├── ego_pose           # 自车位姿：{timestep:03d}.txt
 │   │   ├── extrinsics         # 相机外参：{cam_id}.txt
 │   │   ├── images             # 图像：{timestep:03d}{cam_id}.jpg
 │   │   ├── intrinsics         # 相机内参：{cam_id}.txt
-│   │   ├── lidar              # LiDAR 数据：{timestep:03d}.bin
+│   │   ├── lidar_depth        # LiDAR 数据和对齐后的images
 ```
