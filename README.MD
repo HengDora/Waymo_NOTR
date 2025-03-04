@@ -116,6 +116,11 @@ python ./datasets/waymo_converter.py \
     --segment_file ./data/waymo_valid_list.txt
 ```
 
+生成 LiDAR depth
+```
+python ./datasets/generate_lidar_depth.py --datadir DATA_DIR
+```
+这里的DATA_DIR是processed后的路径。
 ## 4.处理后数据介绍
 经过预处理后，Waymo Open Dataset 将被组织为以下组件：
 
