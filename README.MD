@@ -1,5 +1,22 @@
 # Preparing NeRF On-The-Road (NOTR) Dataset
 
+## 0. Installation
+
+```
+# Set conda environment
+conda create -n waymo_NOTR python=3.8
+conda activate street-gaussian
+
+# Install torch (corresponding to your CUDA version)
+pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu116
+
+# Install requirements
+pip install -r requirements.txt
+
+# Install submodules
+pip install ./submodules/simple-waymo-open-dataset-reader
+```
+
 ## 1. 注册 Waymo Open Dataset
 ### 注册 Waymo Open Dataset 账户并安装 gcloud SDK
 要下载 Waymo 数据集，您需要在 [Waymo Open Dataset](https://waymo.com/open/) 注册一个账户。同时，您需要安装 gcloud SDK 并完成账户认证。请参考 [此页面](https://cloud.google.com/sdk/docs/install) 获取安装和设置 gcloud SDK 的详细信息。
@@ -96,7 +113,7 @@ python datasets/download_waymo.py --set train --split_file data/waymo_splits/div
 ## 3. 数据预处理
 使用 script/waymo/waymo_converter.py 脚本处理 Waymo 数据。以下是针对训练集和验证集的示例用法。
 
-处理 demo.txt 中定义的场景：
+处理 demo.txt 中定义的场景(--set train 2 31 36)：
 
 ```
 python ./datasets/waymo_converter.py \
@@ -106,7 +123,7 @@ python ./datasets/waymo_converter.py \
     --segment_file ./data/waymo_train_list.txt
 ```
 
-处理 val_dynamic.txt 中定义的场景：
+处理 val_dynamic.txt 中定义的场景(--set valid 6 26 90 105 108 134 150 181)：
 
 ```
 python ./datasets/waymo_converter.py \
