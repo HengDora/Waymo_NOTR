@@ -86,10 +86,10 @@ if __name__ == "__main__":
     # 根据 --set 参数选择对应的 list 文件和 source 路径
     if args.set == 'train':
         total_list = open("data/waymo_train_list.txt", "r").readlines()
-        source = "gs://waymo_open_dataset_scene_flow/train"
+        source = "gs://waymo_open_dataset_v_1_4_3/individual_files/training"
     else:  # valid
         total_list = open("data/waymo_valid_list.txt", "r").readlines()
-        source = "gs://waymo_open_dataset_scene_flow/valid"
+        source = "gs://waymo_open_dataset_v_1_4_3/individual_files/validation"
 
     # 获取文件列表
     if args.split_file is None:

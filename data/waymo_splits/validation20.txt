@@ -1,0 +1,21 @@
+# scene_id, seg_name, start_timestep, end_timestep, scene_type
+1,seg102436,0,-1,validation_with_semantic
+12,seg110487,0,-1,validation_with_semantic
+30,seg128317,0,-1,validation_with_semantic
+44,seg139827,0,-1,validation_with_semantic
+46,seg140812,0,-1,validation_with_semantic
+92,seg176940,0,-1,validation_with_semantic
+98,seg180241,0,-1,validation_with_semantic
+108,seg209468,0,-1,validation_with_semantic
+140,seg457538,0,-1,validation_with_semantic
+143,seg475922,0,-1,validation_with_semantic
+150,seg537228,0,-1,validation_with_semantic
+155,seg584791,0,-1,validation_with_semantic
+165,seg668076,0,-1,validation_with_semantic
+167,seg711983,0,-1,validation_with_semantic
+174,seg793294,0,-1,validation_with_semantic
+178,seg813719,0,-1,validation_with_semantic
+180,seg833180,0,-1,validation_with_semantic
+188,seg895655,0,-1,validation_with_semantic
+195,seg924365,0,-1,validation_with_semantic
+197,seg933621,0,-1,validation_with_semantic

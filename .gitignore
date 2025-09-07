@@ -1,1 +1,20 @@
 data/waymo
+# Python bytecode and cache
+# 忽略所有 __pycache__ 目录
+**/__pycache__/
+# 忽略所有 .pyc 编译文件
+*.pyc
+
+# Build artifacts
+# 忽略由 setuptools/distutils 生成的 build 目录
+build/
+# 忽略打包时生成的 .egg-info 目录
+*.egg-info/
+
+# Common OS and editor files (Best Practice)
+# macOS
+.DS_Store
+# VSCode
+.vscode/
+# PyCharm
+.idea/

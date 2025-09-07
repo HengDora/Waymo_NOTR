@@ -29,7 +29,6 @@ gcloud auth login
 
 Once you've registered and installed the gcloud SDK, create a directory to house the raw data:
 
-```shell
 # Create the data directory or create a symbolic link to the data directory
 mkdir -p ./data/waymo/raw   
 mkdir -p ./data/waymo/processed 
@@ -43,23 +42,26 @@ mkdir -p ./data/waymo/processed
 
 您可以通过指定 --set 参数从 train 或 valid 数据集下载特定场景，并结合 --scene_ids 参数指定场景ID。
 
-例如，从训练集下载第 114、700 和 754 个场景：
+例如，从训练集下载第 2、31 和 36 个场景：
 ```shell
 python datasets/download_waymo.py \
     --set train \
-    --target_dir ./data/waymo/raw \
-    --scene_ids 114 700 754
+    --target_dir ./data/waymo/raw/training \
+    --scene_ids 2 31 36
 ```
 
 从验证集下载相同的场景：
 ```
 python datasets/download_waymo.py \
     --set valid \
-    --target_dir ./data/waymo/raw \
+    --target_dir ./data/waymo/raw/validation \
     --scene_ids 6 26 90 105 108 134 150 181
 ```
 
 ### 使用 Split 文件下载不同数据拆分
+
+<details>
+<summary>点击展开详细说明</summary>
 
 您还可以使用 --split_file 参数下载 split 文件中指定的场景。脚本将从文件中读取场景ID，并从指定的数据集（train 或 valid）下载对应场景。
 
@@ -101,12 +103,10 @@ python datasets/download_waymo.py --set train --split_file data/waymo_splits/div
 - Nighttime: 7, 15, 30, 51, 130, 133, 159, 770
 - Rainy: 44, 56, 244, 449, 688, 690, 736, 738
 - High-speed: 2, 41, 46, 62, 71, 73, 82, 83
+</details> 
 
-脚本会从指定的 Google Cloud Storage 存储桶下载 .tfrecord 文件：
 
-训练集：gs://waymo_open_dataset_scene_flow/train
-
-验证集：gs://waymo_open_dataset_scene_flow/valid
+### 脚本会从指定的 Google Cloud Storage 存储桶下载 .tfrecord 文件：
 
 如需更多信息或创建自定义拆分，请参考 data/waymo_splits/ 目录以及列表文件（data/waymo_train_list.txt 和 data/waymo_valid_list.txt）。
 
@@ -117,8 +117,8 @@ python datasets/download_waymo.py --set train --split_file data/waymo_splits/div
 
 ```
 python ./datasets/waymo_converter.py \
-    --root_dir ./data/waymo/raw \
-    --save_dir ./data/waymo/processed \
+    --root_dir ./data/waymo/raw/training \
+    --save_dir ./data/waymo/processed/training \
     --split_file ./data/waymo_splits/demo.txt \
     --segment_file ./data/waymo_train_list.txt
 ```
@@ -127,8 +127,8 @@ python ./datasets/waymo_converter.py \
 
 ```
 python ./datasets/waymo_converter.py \
-    --root_dir ./data/waymo/raw \
-    --save_dir ./data/waymo/processed \
+    --root_dir ./data/waymo/raw/validation \
+    --save_dir ./data/waymo/processed/validation \
     --split_file ./data/waymo_splits/val_dynamic.txt \
     --segment_file ./data/waymo_valid_list.txt
 ```
