@@ -4,11 +4,8 @@
 
 ```
 # Set conda environment
-conda create -n waymo_NOTR python=3.8
+conda create -n waymo_NOTR python=3.9 -y
 conda activate waymo_NOTR
-
-# Install torch (corresponding to your CUDA version)
-pip install torch==1.13.1+cu116 torchvision==0.14.1+cu116 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu116
 
 # Install requirements
 pip install -r requirements.txt
@@ -42,67 +39,24 @@ mkdir -p ./data/waymo/processed
 
 您可以通过指定 --set 参数从 train 或 valid 数据集下载特定场景，并结合 --scene_ids 参数指定场景ID。
 
-例如，从训练集下载第 2、31 和 36 个场景：
-```shell
-python datasets/download_waymo.py \
-    --set train \
-    --target_dir ./data/waymo/raw/training \
-    --scene_ids 2 31 36
-```
-
-从验证集下载相同的场景：
+例如，从**验证集**下载有pvps标注的场景：
 ```
 python datasets/download_waymo.py \
     --set valid \
     --target_dir ./data/waymo/raw/validation \
-    --scene_ids 6 26 90 105 108 134 150 181
+    --scene_ids 1 12 30 44 46 92 98 108 140 143 150 155 165 167 174 178 180 188 195 197
 ```
-
-### 使用 Split 文件下载不同数据拆分
 
 <details>
-<summary>点击展开详细说明</summary>
-
-您还可以使用 --split_file 参数下载 split 文件中指定的场景。脚本将从文件中读取场景ID，并从指定的数据集（train 或 valid）下载对应场景。
-
-例如，从训练集下载自定义 split 文件中的场景：
-- **Static32 Split:**
+<summary>从训练集下载有pvps标注的场景</summary>
 
 ```shell
-python datasets/download_waymo.py  --set train --split_file data/waymo_splits/static32.txt
+python datasets/download_waymo.py \
+    --set train \
+    --target_dir ./data/waymo/raw/training \
+    --scene_ids 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 19 21 22 23 24 25 26 27 28 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 53 54 57 58 59 60 61 62 63 64 65 66 67 68 69 71 72 73 74 75 76 78 79 80 81 82 83 84 85 86 87 88 89 91 93 94 95 96 97 99 100 101 102 103 104 105 106 107 108 109 110 111 112 114 115 116 118 119 120 122 123 125 126 127 128 129 132 134 136 137 138 139 140 141 142 143 145 146 147 148 150 151 152 153 154 155 157 158 159 160 161 162 163 164 165 166 168 170 171 172 173 174 175 176 179 182 183 184 185 186 187 188 189 190 191 192 195 196 197 198 199 201 202 203 204 205 206 208 209 210 211 212 214 215 216 217 218 219 220 221 222 224 225 226 227 228 229 230 231 232 233 234 235 236 238 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255 257 258 259 260 261 262 263 264 265 266 267 268 269 270 271 272 275 276 277 278 279 280 281 282 284 285 286 287 288 290 291 292 293 294 295 296 297 298 299 300 301 302 303 304 307 308 309 310 311 312 313 314 315 316 317 318 319 321 322 323 324 325 326 327 329 331 332 333 334 335 336 337 338 339 340 341 342 343 344 345 346 348 350 351 353 354 355 356 357 358 359 360 361 362 363 364 365 366 368 369 370 371 372 373 374 375 376 377 378 379 381 382 383 384 385 386 387 388 389 390 391 394 396 397 398 399 400 401 402 403 404 405 407 408 409 411 412 413 414 415 416 417 418 419 420 421 422 423 424 425 426 427 428 429 430 431 432 433 434 435 436 437 438 440 441 442 443 444 445 446 447 448 449 450 451 452 453 454 456 457 458 459 461 462 463 464 465 467 468 470 471 472 473 474 475 476 477 478 479 481 482 483 484 485 486 488 489 490 491 492 493 494 495 497 498 499 500 501 502 504 506 507 508 510 511 512 513 514 518 519 520 521 523 524 525 526 527 528 529 530 531 534 536 538 539 540 541 542 543 544 545 546 547 548 550 551 552 553 554 555 556 557 558 559 560 561 562 563 564 565 566 567 568 569 571 572 573 574 575 576 577 578 579 580 581 582 584 586 587 588 589 590 591 592 594 595 596 597 598 599 600 601 602 603 604 605 607 608 609 610 611 612 613 614 615 616 617 618 619 620 621 622 623 624 625 626 627 628 629 630 631 632 633 634 635 636 637 638 639 640 641 642 645 646 647 648 649 650 651 652 653 654 655 656 658 659 660 661 662 663 664 665 666 667 668 669 670 671 672 674 675 676 677 678 679 680 681 682 683 684 686 687 689 690 691 692 693 694 695 696 697 698 699 700 701 702 703 704 705 707 708 709 711 712 713 714 715 716 717 718 719 721 722 723 725 726 727 728 729 730 732 733 734 735 736 737 738 739 740 741 742 743 745 746 747 748 749 750 751 752 754 755 756 757 758 759 760 761 762 763 764 765 767 769 770 771 772 773 776 778 779 780 781 782 784 785 786 787 788 789 791 792 793 795 796 797
 ```
 
-- **Dynamic32 Split:**
-
-```shell
-python datasets/download_waymo.py --set train --split_file data/waymo_splits/dynamic32.txt
-```
-
-- **Diverse56 Split:**
-
-```shell
-python datasets/download_waymo.py --set train --split_file data/waymo_splits/diverse56.txt
-```
-
-请确保根据您的项目目录结构和需求修改路径和文件名。脚本需要 data/waymo_train_list.txt（训练集）和 data/waymo_valid_list.txt（验证集）这两个文件，其中包含场景名称列表。
-
-### 数据集拆分
-
-对于 Waymo Open Dataset，场景名称按字母顺序排列并存储在 data/waymo_train_list.txt（训练集）和 data/waymo_valid_list.txt（验证集）中。场景索引由行号减一确定（从 0 开始计数）：
-
-**Static-32**: 3, 19, 36, 69, 81, 126, 139, 140, 146, 148, 157, 181, 200, 204, 226, 232, 237, 241, 245, 246, 271, 297, 302, 312, 314, 362, 482, 495, 524, 527, 753, 780
-
-**Dynamic-32**: 16, 21, 22, 25, 31, 34, 35, 49, 53, 80, 84, 86, 89, 94, 96, 102, 111, 222, 323, 323, 382, 382, 402, 402, 427, 427, 438, 438, 546, 581, 592, 620, 640, 700, 754, 795, 796
-
-**Diverse-56**:
-
-- Ego-static: 1, 23, 24, 37, 66, 108, 114, 115
-- Dusk/Dawn: 124, 147, 206, 213, 574, 680, 696, 737
-- Gloomy: 47, 205, 220, 284, 333, 537, 699, 749
-- Exposure mismatch: 58, 93, 143, 505, 545, 585, 765, 766
-- Nighttime: 7, 15, 30, 51, 130, 133, 159, 770
-- Rainy: 44, 56, 244, 449, 688, 690, 736, 738
-- High-speed: 2, 41, 46, 62, 71, 73, 82, 83
 </details> 
 
 
@@ -113,31 +67,34 @@ python datasets/download_waymo.py --set train --split_file data/waymo_splits/div
 ## 3. 数据预处理
 使用 script/waymo/waymo_converter.py 脚本处理 Waymo 数据。以下是针对训练集和验证集的示例用法。
 
-处理 demo.txt 中定义的场景(--set train 2 31 36)：
-
-```
-python ./datasets/waymo_converter.py \
-    --root_dir ./data/waymo/raw/training \
-    --save_dir ./data/waymo/processed/training \
-    --split_file ./data/waymo_splits/demo.txt \
-    --segment_file ./data/waymo_train_list.txt
-```
-
-处理 val_dynamic.txt 中定义的场景(--set valid 6 26 90 105 108 134 150 181)：
+处理 validation20.txt 中定义的场景，即有pvps标注的sequence (--set valid 1 12 30 44 46 92 98 108 140 143 150 155 165 167 174 178 180 188 195 197)：
 
 ```
 python ./datasets/waymo_converter.py \
     --root_dir ./data/waymo/raw/validation \
     --save_dir ./data/waymo/processed/validation \
-    --split_file ./data/waymo_splits/val_dynamic.txt \
+    --split_file ./data/waymo_splits/validation20.txt \
     --segment_file ./data/waymo_valid_list.txt
 ```
 
-生成 LiDAR depth
-```
-python ./datasets/generate_lidar_depth.py --datadir DATA_DIR
+### 生成激光雷达深度图 (Generate LiDAR Depth Maps)
+
+本脚本用于批量处理 **Waymo 数据集**，为指定父目录（如validation）下的每一个序列（sequence）文件夹生成稀疏的激光雷达深度图。
+
+在终端中运行以下命令：
+
+```shell
+python generate_depth.py --datadir <path_to_parent_directory>
+
+python ./datasets/pvps/generate_depth.py --datadir Waymo_NOTR/data/waymo/raw/validation
 ```
 这里的DATA_DIR是processed后的路径。
+
+--datadir
+
+(必需) 指向包含所有已处理序列文件夹的 父目录路径。
+脚本会自动遍历此目录下的所有子文件夹，并对每一个进行处理。
+
 ## 4.处理后数据介绍
 经过预处理后，Waymo Open Dataset 将被组织为以下组件：
 
@@ -176,3 +133,34 @@ data/waymo/processed
 │   │   ├── intrinsics         # 相机内参：{cam_id}.txt
 │   │   ├── lidar_depth        # LiDAR 数据和对齐后的images
 ```
+
+
+## 5.提取 Waymo PVPS 标注信息
+
+本脚本用于批量处理 **Waymo 数据集**，从序列文件夹中的 `.tfrecord` 文件中提取 **语义分割标签**，并可选保存彩色可视化结果。
+
+### 使用方法
+
+在终端中运行以下命令：
+
+```shell
+python ./datasets/pvps/pvps_semantic.py \
+  --datadir /home/hw08/project/zqy/DynamicStreet-4DGS/Waymo_NOTR/data/waymo/raw/validation \
+  --outdir /home/hw08/project/zqy/DynamicStreet-4DGS/Waymo_NOTR/data/waymo/processed/validation \
+  --segment-file /home/hw08/project/zqy/DynamicStreet-4DGS/Waymo_NOTR/data/waymo_valid_list.txt \
+  --scene-ids 1 12 30 44 46 92 98 108 140 143 150 155 165 167 174 178 180 188 195 197
+```
+
+## 参数说明
+
+- **--datadir**  
+  *(必需)* 指向包含 **若干 `.tfrecord` 文件** 的目录路径。  
+  脚本会自动遍历此目录下的所有 `.tfrecord` 文件，并逐一处理。  
+
+- **--outdir**  
+  *(必需)* 保存处理结果的父目录路径。  
+  每个 `.tfrecord` 文件会在此目录下生成一个独立的输出文件夹。  
+
+- **--no-vis**  
+  *(可选)* 加上该参数后，不会保存彩色可视化的标签图，只保存灰度语义标签图。  
+
