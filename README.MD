@@ -86,7 +86,7 @@ python ./datasets/waymo_converter.py \
 ```shell
 python generate_depth.py --datadir <path_to_parent_directory>
 
-python ./datasets/pvps/generate_depth.py --datadir Waymo_NOTR/data/waymo/raw/validation
+python ./datasets/generate_depth.py --datadir Waymo_NOTR/data/waymo/raw/validation
 ```
 这里的DATA_DIR是processed后的路径。
 
@@ -144,7 +144,7 @@ data/waymo/processed
 在终端中运行以下命令：
 
 ```shell
-python ./datasets/pvps/pvps_semantic.py \
+python ./datasets/pvps_semantic.py \
   --datadir /home/hw08/project/zqy/DynamicStreet-4DGS/Waymo_NOTR/data/waymo/raw/validation \
   --outdir /home/hw08/project/zqy/DynamicStreet-4DGS/Waymo_NOTR/data/waymo/processed/validation \
   --segment-file /home/hw08/project/zqy/DynamicStreet-4DGS/Waymo_NOTR/data/waymo_valid_list.txt \
